@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <meta name="keywords" content="关键词">
+        <meta name="description" content="描述">
+        <meta name="author" content="Pt">
+        <style>
+            body,dl,dd,p,h1,h2,h3,h4,h5,h6{margin:0;}
+            ol,ul,li{margin:0;padding:0;list-style:none;}
+            img{border:none;}
+        
+        </style>
+    </head>
+    <body>
+        <div id="wrap"></div>
+        <script>
+            const Observer= function (data) {
+                //给对象中每个键绑定/重写属性
+                //访问器属性的四个属性 enumerable get set configurable
+                for(var key in data){
+                    defineReactive(data,key);
+                }
+            };
+
+            const defineReactive= function (obj,key) {
+                //局部变量dep,用于get,set内部调用
+                const dep= new Dep();
+                let val= obj[key];
+                Object.defineProperty(obj,key, {
+                    enumerable: true,
+                    configurable: true,
+                    get() {
+                        console.log("in get");
+
+                        dep.depend();
+                        return val;
+                    },
+                    set(newVal){
+                        if(newVal===val){
+                            return;
+                        }
+                        val= newVal;
+                        dep.notify();
+                    }
+                });
+
+            };
+            const observe= function (data) {
+                return new Observer(data);
+            };
+
+            const Vue= function (options){
+                const self= this;
+                if(options && typeof options.data==='function'){
+                    this._data= options.data.apply(this);
+                }
+                this.mount= function () {
+                    new Watcher(self,self.render);
+                };
+                this.render= function () {
+                    with(self){
+                        _data.text;
+                    }
+                };
+
+                observe(this._data);
+            };
+
+            const Watcher= function (vm,fn) {
+                const self= this;
+                this.vm= vm;
+
+                Dep.target= this;
+                //
+                this.addDep= function (dep) {
+                    //
+                    dep.addSub(self);
+                };
+                this.update= function () {
+                    console.log('in watcher update');
+                    fn();
+                };
+                this.value= fn();
+                Dep.target= null;
+            };
+
+            const Dep= function () {
+                const self= this;
+                this.target= null;
+                this.subs= [];
+                this.depend= function () {
+                    if(Dep.target){
+                        Dep.target.addDep(self);
+                    }
+                };
+                this.addSub= function (watcher) {
+                    self.subs.push(watcher);
+                };
+                this.notify= function () {
+                    for(let i=0;i<self.subs.length;i+=1){
+                        self.subs[i].update();
+                    }
+                }
+            };
+            const vue= new Vue({
+                data(){
+                    return {text: 'hello world'};
+                }
+            });
+            vue.mount(); // in get
+            vue._data.text = '123'; // in watcher update /n in get
+        </script>
+        <!--<script src="two-way%20binding.js"></script>-->
+    </body>
+</html>
