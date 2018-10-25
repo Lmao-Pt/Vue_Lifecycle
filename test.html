@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <meta name="keywords" content="关键词">
+        <meta name="description" content="描述">
+        <meta name="author" content="Pt">
+        <style>
+            body,dl,dd,p,h1,h2,h3,h4,h5,h6{margin:0;}
+            ol,ul,li{margin:0;padding:0;list-style:none;}
+            img{border:none;}
+        
+        </style>
+    </head>
+    <body>
+        <div id="wrap"></div>
+        
+        <script>
+            function People(name,fn) {
+                this.name= name;
+                fn();
+                this.a = this.name;
+            }
+            var jack= new People('jack',function (a) {
+                console.log(a + 'say hi');
+            });
+            console.log(jack.name);
+        </script>
+    </body>
+</html>

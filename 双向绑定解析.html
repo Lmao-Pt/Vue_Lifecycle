@@ -42,6 +42,7 @@
 
 
             };
+            Dep.target= null;
             function observe(data) {
                 if (!data || typeof data !== 'object') {
                     return;
@@ -77,18 +78,20 @@
                     this.run();
                 },
                 run: function () {
-                    var value= this.vm.data[this.exp];
-                    var oldVal= this.value;
+                    var value= this.vm.data[this.exp];//获取监测的vm的（某一）键值
+                    var oldVal= this.value;//获取watcher内部监测的值
+                    //比较监测的值与实际vm的值
                     if(value!==oldVal){
-                        this.value=value;
-                        this.cb.call(this.vm,value,oldVal);
+                        this.value=value; //修改内部观测的值
+                        this.cb.call(this.vm,value,oldVal); //运行回调函数，修改dom
                     }
                 },
                 get: function () {
                   Dep.target= this;//缓存自己
-                  var value= this.vm.data[this.exp];
+                  console.log("Dep's :" + Dep.target);
+                  var value= this.vm.data[this.exp];//获取vm对象的被监测的值
                   Dep.target= null;
-                  return value;
+                  return value; //返回vm对象的值给 watcher的value
                 }
             };
             //关联watcher observer
@@ -98,6 +101,7 @@
                 el.innerHTML= this.data[exp];
                 new Watcher(this,exp,function (value) {
                     el.innerHTML= value;
+                    console.log("it's " + value);
                 });
                 return this;
             }
@@ -111,22 +115,9 @@
                 console.log("name值改变了");
                 selfVue.data.name= "Pt";
             },2000);
-            var book= {
-                book2: '12',
-                book1: {
-                    name: ''
-                }
 
-            };
             
-            observe(book);
-            book.book1.name= "hello world";
-            book.book2= "second book";
 
-
-            var inp= document.getElementById("input");
-            observe(inp);
-            input.value= book.book2;
         </script>
     </body>
 </html>
